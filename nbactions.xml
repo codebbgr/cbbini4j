@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-display-dependency-updates</actionName>
+            <displayName>display-dependency-updates</displayName>
+            <goals>
+                <goal>versions:display-dependency-updates</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-display-plugin-updates</actionName>
+            <displayName>display-plugin-updates</displayName>
+            <goals>
+                <goal>versions:display-plugin-updates</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-spotbugs-site</actionName>
+            <displayName>spotbugs-site</displayName>
+            <goals>
+                <goal>site</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-codebb-ftp deploy</actionName>
+            <displayName>codebb-ftp deploy</displayName>
+            <goals>
+                <goal>deploy</goal>
+            </goals>
+        </action>
+    </actions>
