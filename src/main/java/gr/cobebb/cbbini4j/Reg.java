@@ -5,6 +5,7 @@
 /**
  * Changelog
  * =========
+ * 03/04/2020 (gmoralis) - Changed InputStreamReader to use utf-8
  * 03/04/2020 (gmoralis) - Initial commit from ini4j project
  */
 package gr.cobebb.cbbini4j;
@@ -27,6 +28,7 @@ import java.io.Reader;
 import java.io.Writer;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class Reg extends BasicRegistry implements Registry, Persistable, Configurable
 {
@@ -212,10 +214,9 @@ public class Reg extends BasicRegistry implements Registry, Persistable, Configu
 
     @Override public void store(File output) throws IOException
     {
-        OutputStream stream = new FileOutputStream(output);
-
-        store(stream);
-        stream.close();
+        try (OutputStream stream = new FileOutputStream(output)) {
+            store(stream);
+        }
     }
 
     public void write() throws IOException
@@ -263,11 +264,12 @@ public class Reg extends BasicRegistry implements Registry, Persistable, Configu
 
             if (status != 0)
             {
-                Reader in = new InputStreamReader(proc.getErrorStream());
-                char[] buff = new char[STDERR_BUFF_SIZE];
-                int n = in.read(buff);
-
-                in.close();
+                char[] buff;
+                int n;
+                try (Reader in = new InputStreamReader(proc.getErrorStream(),StandardCharsets.UTF_8)) {
+                    buff = new char[STDERR_BUFF_SIZE];
+                    n = in.read(buff);
+                }
                 throw new IOException(new String(buff, 0, n).trim());
             }
         }

@@ -5,6 +5,7 @@
 /**
  * Changelog
  * =========
+ * 03/04/2020 (gmoralis) - Changed key for cbbini4j project
  * 03/04/2020 (gmoralis) - Initial commit from ini4j project
  */
 package gr.cobebb.cbbini4j;
@@ -16,7 +17,7 @@ import java.nio.charset.Charset;
 @SuppressWarnings("PMD.ExcessivePublicCount")
 public class Config implements Cloneable, Serializable
 {
-    public static final String KEY_PREFIX = "org.ini4j.config.";
+    public static final String KEY_PREFIX = "gr.codebb.cbbini4j.config.";
     public static final String PROP_EMPTY_OPTION = "emptyOption";
     public static final String PROP_EMPTY_SECTION = "emptySection";
     public static final String PROP_GLOBAL_SECTION = "globalSection";

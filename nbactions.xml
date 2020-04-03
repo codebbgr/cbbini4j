@@ -21,11 +21,4 @@
                 <goal>site</goal>
             </goals>
         </action>
-        <action>
-            <actionName>CUSTOM-codebb-ftp deploy</actionName>
-            <displayName>codebb-ftp deploy</displayName>
-            <goals>
-                <goal>deploy</goal>
-            </goals>
-        </action>
     </actions>

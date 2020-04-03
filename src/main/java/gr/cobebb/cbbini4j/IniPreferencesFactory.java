@@ -5,6 +5,7 @@
 /**
  * Changelog
  * =========
+ * 03/04/2020 (gmoralis) - Changed keys for the cbbini4j project
  * 03/04/2020 (gmoralis) - Initial commit from ini4j project
  */
 package gr.cobebb.cbbini4j;
@@ -20,9 +21,9 @@ import java.util.prefs.PreferencesFactory;
 
 public class IniPreferencesFactory implements PreferencesFactory
 {
-    public static final String PROPERTIES = "ini4j.properties";
-    public static final String KEY_USER = "org.ini4j.prefs.user";
-    public static final String KEY_SYSTEM = "org.ini4j.prefs.system";
+    public static final String PROPERTIES = "cbbini4j.properties";
+    public static final String KEY_USER = "gr.codebb.cbbini4j.prefs.user";
+    public static final String KEY_SYSTEM = "gr.codebb.cbbini4j.prefs.system";
     private Preferences _system;
     private Preferences _user;
 
