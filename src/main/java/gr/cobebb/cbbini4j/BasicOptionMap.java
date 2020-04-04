@@ -5,6 +5,7 @@
 /**
  * Changelog
  * =========
+ * 04/04/2020 (gmoralis) - Let OptionMap.as accept ClassLoader as the second argument (jetbrains patch)
  * 03/04/2020 (gmoralis) - Initial commit from ini4j project
  */
 package gr.cobebb.cbbini4j;
@@ -18,8 +19,8 @@ import java.lang.reflect.Array;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BasicOptionMap extends CommonMultiMap<String, String> implements OptionMap
-{
+public class BasicOptionMap extends CommonMultiMap<String, String> implements OptionMap {
+
     private static final char SUBST_CHAR = '$';
     private static final String SYSTEM_PROPERTY_PREFIX = "@prop/";
     private static final String ENVIRONMENT_PREFIX = "@env/";
@@ -32,72 +33,72 @@ public class BasicOptionMap extends CommonMultiMap<String, String> implements Op
     private BeanAccess _defaultBeanAccess;
     private final boolean _propertyFirstUpper;
 
-    public BasicOptionMap()
-    {
+    public BasicOptionMap() {
         this(false);
     }
 
-    public BasicOptionMap(boolean propertyFirstUpper)
-    {
+    public BasicOptionMap(boolean propertyFirstUpper) {
         _propertyFirstUpper = propertyFirstUpper;
     }
 
     @Override
     @SuppressWarnings(Warnings.UNCHECKED)
-    public <T> T getAll(Object key, Class<T> clazz)
-    {
+    public <T> T getAll(Object key, Class<T> clazz) {
         requireArray(clazz);
         T value;
 
         value = (T) Array.newInstance(clazz.getComponentType(), length(key));
-        for (int i = 0; i < length(key); i++)
-        {
+        for (int i = 0; i < length(key); i++) {
             Array.set(value, i, BeanTool.getInstance().parse(get(key, i), clazz.getComponentType()));
         }
 
         return value;
     }
 
-    @Override public void add(String key, Object value)
-    {
+    @Override
+    public void add(String key, Object value) {
         super.add(key, ((value == null) || (value instanceof String)) ? (String) value : String.valueOf(value));
     }
 
-    @Override public void add(String key, Object value, int index)
-    {
+    @Override
+    public void add(String key, Object value, int index) {
         super.add(key, ((value == null) || (value instanceof String)) ? (String) value : String.valueOf(value), index);
     }
 
-    @Override public <T> T as(Class<T> clazz)
-    {
-        return BeanTool.getInstance().proxy(clazz, getDefaultBeanAccess());
+    @Override
+    public <T> T as(Class<T> clazz) {
+        return BeanTool.getInstance().proxy(clazz, getDefaultBeanAccess(), null);
     }
 
-    @Override public <T> T as(Class<T> clazz, String keyPrefix)
-    {
-        return BeanTool.getInstance().proxy(clazz, newBeanAccess(keyPrefix));
+    @Override
+    public <T> T as(Class<T> clazz, ClassLoader classLoader) {
+        return BeanTool.getInstance().proxy(clazz, getDefaultBeanAccess(), classLoader);
     }
 
-    @Override public String fetch(Object key)
-    {
+    @Override
+    public <T> T as(Class<T> clazz, String keyPrefix) {
+        return BeanTool.getInstance().proxy(clazz, newBeanAccess(keyPrefix), null);
+    }
+
+    @Override
+    public String fetch(Object key) {
         int len = length(key);
 
         return (len == 0) ? null : fetch(key, len - 1);
     }
 
-    @Override public String fetch(Object key, String defaultValue)
-    {
+    @Override
+    public String fetch(Object key, String defaultValue) {
         String str = get(key);
 
         return (str == null) ? defaultValue : str;
     }
 
-    @Override public String fetch(Object key, int index)
-    {
+    @Override
+    public String fetch(Object key, int index) {
         String value = get(key, index);
 
-        if ((value != null) && (value.indexOf(SUBST_CHAR) >= 0))
-        {
+        if ((value != null) && (value.indexOf(SUBST_CHAR) >= 0)) {
             StringBuilder buffer = new StringBuilder(value);
 
             resolve(buffer);
@@ -107,245 +108,217 @@ public class BasicOptionMap extends CommonMultiMap<String, String> implements Op
         return value;
     }
 
-    @Override public <T> T fetch(Object key, Class<T> clazz)
-    {
+    @Override
+    public <T> T fetch(Object key, Class<T> clazz) {
         return BeanTool.getInstance().parse(fetch(key), clazz);
     }
 
-    @Override public <T> T fetch(Object key, Class<T> clazz, T defaultValue)
-    {
+    @Override
+    public <T> T fetch(Object key, Class<T> clazz, T defaultValue) {
         String str = fetch(key);
 
         return (str == null) ? defaultValue : BeanTool.getInstance().parse(str, clazz);
     }
 
-    @Override public <T> T fetch(Object key, int index, Class<T> clazz)
-    {
+    @Override
+    public <T> T fetch(Object key, int index, Class<T> clazz) {
         return BeanTool.getInstance().parse(fetch(key, index), clazz);
     }
 
     @Override
     @SuppressWarnings(Warnings.UNCHECKED)
-    public <T> T fetchAll(Object key, Class<T> clazz)
-    {
+    public <T> T fetchAll(Object key, Class<T> clazz) {
         requireArray(clazz);
         T value;
 
         value = (T) Array.newInstance(clazz.getComponentType(), length(key));
-        for (int i = 0; i < length(key); i++)
-        {
+        for (int i = 0; i < length(key); i++) {
             Array.set(value, i, BeanTool.getInstance().parse(fetch(key, i), clazz.getComponentType()));
         }
 
         return value;
     }
 
-    @Override public void from(Object bean)
-    {
+    @Override
+    public void from(Object bean) {
         BeanTool.getInstance().inject(getDefaultBeanAccess(), bean);
     }
 
-    @Override public void from(Object bean, String keyPrefix)
-    {
+    @Override
+    public void from(Object bean, String keyPrefix) {
         BeanTool.getInstance().inject(newBeanAccess(keyPrefix), bean);
     }
 
-    @Override public <T> T get(Object key, Class<T> clazz)
-    {
+    @Override
+    public <T> T get(Object key, Class<T> clazz) {
         return BeanTool.getInstance().parse(get(key), clazz);
     }
 
-    @Override public String get(Object key, String defaultValue)
-    {
+    @Override
+    public String get(Object key, String defaultValue) {
         String str = get(key);
 
         return (str == null) ? defaultValue : str;
     }
 
-    @Override public <T> T get(Object key, Class<T> clazz, T defaultValue)
-    {
+    @Override
+    public <T> T get(Object key, Class<T> clazz, T defaultValue) {
         String str = get(key);
 
         return (str == null) ? defaultValue : BeanTool.getInstance().parse(str, clazz);
     }
 
-    @Override public <T> T get(Object key, int index, Class<T> clazz)
-    {
+    @Override
+    public <T> T get(Object key, int index, Class<T> clazz) {
         return BeanTool.getInstance().parse(get(key, index), clazz);
     }
 
-    @Override public String put(String key, Object value)
-    {
+    @Override
+    public String put(String key, Object value) {
         return super.put(key, ((value == null) || (value instanceof String)) ? (String) value : String.valueOf(value));
     }
 
-    @Override public String put(String key, Object value, int index)
-    {
+    @Override
+    public String put(String key, Object value, int index) {
         return super.put(key, ((value == null) || (value instanceof String)) ? (String) value : String.valueOf(value), index);
     }
 
-    @Override public void putAll(String key, Object value)
-    {
-        if (value != null)
-        {
+    @Override
+    public void putAll(String key, Object value) {
+        if (value != null) {
             requireArray(value.getClass());
         }
 
         remove(key);
-        if (value != null)
-        {
+        if (value != null) {
             int n = Array.getLength(value);
 
-            for (int i = 0; i < n; i++)
-            {
+            for (int i = 0; i < n; i++) {
                 add(key, Array.get(value, i));
             }
         }
     }
 
-    @Override public void to(Object bean)
-    {
+    @Override
+    public void to(Object bean) {
         BeanTool.getInstance().inject(bean, getDefaultBeanAccess());
     }
 
-    @Override public void to(Object bean, String keyPrefix)
-    {
+    @Override
+    public void to(Object bean, String keyPrefix) {
         BeanTool.getInstance().inject(bean, newBeanAccess(keyPrefix));
     }
 
-    synchronized BeanAccess getDefaultBeanAccess()
-    {
-        if (_defaultBeanAccess == null)
-        {
+    synchronized BeanAccess getDefaultBeanAccess() {
+        if (_defaultBeanAccess == null) {
             _defaultBeanAccess = newBeanAccess();
         }
 
         return _defaultBeanAccess;
     }
 
-    boolean isPropertyFirstUpper()
-    {
+    boolean isPropertyFirstUpper() {
         return _propertyFirstUpper;
     }
 
-    BeanAccess newBeanAccess()
-    {
+    BeanAccess newBeanAccess() {
         return new Access();
     }
 
-    BeanAccess newBeanAccess(String propertyNamePrefix)
-    {
+    BeanAccess newBeanAccess(String propertyNamePrefix) {
         return new Access(propertyNamePrefix);
     }
 
-    void resolve(StringBuilder buffer)
-    {
+    void resolve(StringBuilder buffer) {
         Matcher m = EXPRESSION.matcher(buffer);
 
-        while (m.find())
-        {
+        while (m.find()) {
             String name = m.group(G_OPTION);
             int index = (m.group(G_INDEX) == null) ? -1 : Integer.parseInt(m.group(G_INDEX));
             String value;
 
-            if (name.startsWith(ENVIRONMENT_PREFIX))
-            {
+            if (name.startsWith(ENVIRONMENT_PREFIX)) {
                 value = Config.getEnvironment(name.substring(ENVIRONMENT_PREFIX_LEN));
-            }
-            else if (name.startsWith(SYSTEM_PROPERTY_PREFIX))
-            {
+            } else if (name.startsWith(SYSTEM_PROPERTY_PREFIX)) {
                 value = Config.getSystemProperty(name.substring(SYSTEM_PROPERTY_PREFIX_LEN));
-            }
-            else
-            {
+            } else {
                 value = (index == -1) ? fetch(name) : fetch(name, index);
             }
 
-            if (value != null)
-            {
+            if (value != null) {
                 buffer.replace(m.start(), m.end(), value);
                 m.reset(buffer);
             }
         }
     }
 
-    private void requireArray(Class clazz)
-    {
-        if (!clazz.isArray())
-        {
+    private void requireArray(Class clazz) {
+        if (!clazz.isArray()) {
             throw new IllegalArgumentException("Array required");
         }
     }
 
-    class Access implements BeanAccess
-    {
+    class Access implements BeanAccess {
+
         private final String _prefix;
 
-        Access()
-        {
+        Access() {
             this(null);
         }
 
-        Access(String prefix)
-        {
+        Access(String prefix) {
             _prefix = prefix;
         }
 
-        @Override public void propAdd(String propertyName, String value)
-        {
+        @Override
+        public void propAdd(String propertyName, String value) {
             add(transform(propertyName), value);
         }
 
-        @Override public String propDel(String propertyName)
-        {
+        @Override
+        public String propDel(String propertyName) {
             return remove(transform(propertyName));
         }
 
-        @Override public String propGet(String propertyName)
-        {
+        @Override
+        public String propGet(String propertyName) {
             return fetch(transform(propertyName));
         }
 
-        @Override public String propGet(String propertyName, int index)
-        {
+        @Override
+        public String propGet(String propertyName, int index) {
             return fetch(transform(propertyName), index);
         }
 
-        @Override public int propLength(String propertyName)
-        {
+        @Override
+        public int propLength(String propertyName) {
             return length(transform(propertyName));
         }
 
-        @Override public String propSet(String propertyName, String value)
-        {
+        @Override
+        public String propSet(String propertyName, String value) {
             return put(transform(propertyName), value);
         }
 
-        @Override public String propSet(String propertyName, String value, int index)
-        {
+        @Override
+        public String propSet(String propertyName, String value, int index) {
             return put(transform(propertyName), value, index);
         }
 
-        private String transform(String orig)
-        {
+        private String transform(String orig) {
             String ret = orig;
 
-            if (((_prefix != null) || isPropertyFirstUpper()) && (orig != null))
-            {
+            if (((_prefix != null) || isPropertyFirstUpper()) && (orig != null)) {
                 StringBuilder buff = new StringBuilder();
 
-                if (_prefix != null)
-                {
+                if (_prefix != null) {
                     buff.append(_prefix);
                 }
 
-                if (isPropertyFirstUpper())
-                {
+                if (isPropertyFirstUpper()) {
                     buff.append(Character.toUpperCase(orig.charAt(0)));
                     buff.append(orig.substring(1));
-                }
-                else
-                {
+                } else {
                     buff.append(orig);
                 }
 

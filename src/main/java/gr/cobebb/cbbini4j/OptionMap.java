@@ -5,6 +5,7 @@
 /**
  * Changelog
  * =========
+ * 04/04/2020 (gmoralis) - Let OptionMap.as accept ClassLoader as the second argument (jetbrains patch)
  * 03/04/2020 (gmoralis) - Initial commit from ini4j project
  */
 package gr.cobebb.cbbini4j;
@@ -18,6 +19,8 @@ public interface OptionMap extends MultiMap<String, String>, CommentedMap<String
     void add(String key, Object value, int index);
 
     <T> T as(Class<T> clazz);
+    
+    <T> T as(Class<T> clazz, ClassLoader classLoader);
 
     <T> T as(Class<T> clazz, String keyPrefix);
 
