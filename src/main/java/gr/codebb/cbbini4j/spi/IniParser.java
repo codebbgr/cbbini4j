@@ -5,7 +5,8 @@
 /**
  * Changelog
  * =========
- * 04/04/2020 (gmoralis) - Let comment be on the same line as section header 
+ * 04/04/2020 (gmoralis) - Include the location of the errors 
+ * 04/04/2020 (gmoralis) - Let comment be on the same line as section header
  * 03/04/2020 (gmoralis) - Initial commit from ini4j project
  */
 package gr.codebb.cbbini4j.spi;
@@ -73,11 +74,11 @@ public class IniParser extends AbstractParser {
                         sectionName = getConfig().getGlobalSectionName();
                         handler.startSection(sectionName);
                     } else {
-                        parseError(line, source.getLineNumber());
+                        parseError(line, source.getUrl(), source.getLineNumber());
                     }
                 }
 
-                parseOptionLine(line, handler, source.getLineNumber());
+                parseOptionLine(line, handler, source.getUrl(), source.getLineNumber());
             }
         }
 
@@ -97,13 +98,13 @@ public class IniParser extends AbstractParser {
             if (afterSectionEnd.isEmpty() || isComment(afterSectionEnd.charAt(0))) {
                 line = line.substring(0, sectionEnd + 1);
             } else {
-                parseError(line, source.getLineNumber());
+                parseError(line, source.getUrl(), source.getLineNumber());
             }
         }
 
         sectionName = unescapeKey(line.substring(1, line.length() - 1).trim());
         if ((sectionName.length() == 0) && !getConfig().isUnnamedSection()) {
-            parseError(line, source.getLineNumber());
+            parseError(line, source.getUrl(), source.getLineNumber());
         }
 
         if (getConfig().isLowerCaseSection()) {

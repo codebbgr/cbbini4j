@@ -5,6 +5,7 @@
 /**
  * Changelog
  * =========
+ * 04/04/2020 (gmoralis) - Include the location of the errors
  * 03/04/2020 (gmoralis) - Initial commit from ini4j project
  */
 package gr.codebb.cbbini4j.spi;
@@ -18,23 +19,20 @@ import java.io.Reader;
 
 import java.net.URL;
 
-public class OptionsParser extends AbstractParser
-{
+public class OptionsParser extends AbstractParser {
+
     private static final String COMMENTS = "!#";
     private static final String OPERATORS = ":=";
 
-    public OptionsParser()
-    {
+    public OptionsParser() {
         super(OPERATORS, COMMENTS);
     }
 
-    public static OptionsParser newInstance()
-    {
+    public static OptionsParser newInstance() {
         return ServiceFinder.findService(OptionsParser.class);
     }
 
-    public static OptionsParser newInstance(Config config)
-    {
+    public static OptionsParser newInstance(Config config) {
         OptionsParser instance = newInstance();
 
         instance.setConfig(config);
@@ -42,27 +40,22 @@ public class OptionsParser extends AbstractParser
         return instance;
     }
 
-    public void parse(InputStream input, OptionsHandler handler) throws IOException, InvalidFileFormatException
-    {
+    public void parse(InputStream input, OptionsHandler handler) throws IOException, InvalidFileFormatException {
         parse(newIniSource(input, handler), handler);
     }
 
-    public void parse(Reader input, OptionsHandler handler) throws IOException, InvalidFileFormatException
-    {
+    public void parse(Reader input, OptionsHandler handler) throws IOException, InvalidFileFormatException {
         parse(newIniSource(input, handler), handler);
     }
 
-    public void parse(URL input, OptionsHandler handler) throws IOException, InvalidFileFormatException
-    {
+    public void parse(URL input, OptionsHandler handler) throws IOException, InvalidFileFormatException {
         parse(newIniSource(input, handler), handler);
     }
 
-    private void parse(IniSource source, OptionsHandler handler) throws IOException, InvalidFileFormatException
-    {
+    private void parse(IniSource source, OptionsHandler handler) throws IOException, InvalidFileFormatException {
         handler.startOptions();
-        for (String line = source.readLine(); line != null; line = source.readLine())
-        {
-            parseOptionLine(line, handler, source.getLineNumber());
+        for (String line = source.readLine(); line != null; line = source.readLine()) {
+            parseOptionLine(line, handler, source.getUrl(), source.getLineNumber());
         }
 
         handler.endOptions();

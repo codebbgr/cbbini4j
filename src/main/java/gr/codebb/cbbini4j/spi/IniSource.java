@@ -5,6 +5,7 @@
 /**
  * Changelog
  * =========
+ * 04/04/2020 (gmoralis) - Include the location of the errors 
  * 04/04/2020 (gmoralis) - Fix line separators processing in comments parsing logic (jetbrains patch)
  * 03/04/2020 (gmoralis) - Initial commit from ini4j project
  */
@@ -46,6 +47,16 @@ class IniSource {
     IniSource(URL input, HandlerBase handler, String comments, Config config) throws IOException {
         this(new UnicodeInputStreamReader(input.openStream(), config.getFileEncoding()), handler, comments, config);
         _base = input;
+    }
+
+    URL getUrl() {
+        if (_chain != null) {
+            return _chain.getUrl();
+        } else if (_base != null) {
+            return _base;
+        } else {
+            return null;
+        }
     }
 
     int getLineNumber() {
