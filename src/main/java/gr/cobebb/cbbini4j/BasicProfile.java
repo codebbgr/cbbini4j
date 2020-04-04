@@ -5,6 +5,7 @@
 /**
  * Changelog
  * =========
+ * 04/04/2020 (gmoralis) - Change "BasicProfile" members visibility correspondingly
  * 03/04/2020 (gmoralis) - renamed remove(obj,obj) function to removeObj(obj,obj)
  * 03/04/2020 (gmoralis) - Initial commit from ini4j project
  */
@@ -194,7 +195,7 @@ public class BasicProfile extends CommonMultiMap<String, Profile.Section> implem
         }
     }
 
-    void store(IniHandler formatter)
+    protected void store(IniHandler formatter)
     {
         formatter.startIni();
         store(formatter, getComment());
@@ -206,7 +207,7 @@ public class BasicProfile extends CommonMultiMap<String, Profile.Section> implem
         formatter.endIni();
     }
 
-    void store(IniHandler formatter, Section s)
+    protected void store(IniHandler formatter, Section s)
     {
         store(formatter, getComment(s.getName()));
         formatter.startSection(s.getName());
@@ -218,12 +219,12 @@ public class BasicProfile extends CommonMultiMap<String, Profile.Section> implem
         formatter.endSection();
     }
 
-    void store(IniHandler formatter, String comment)
+    protected void store(IniHandler formatter, String comment)
     {
         formatter.handleComment(comment);
     }
 
-    void store(IniHandler formatter, Section section, String option)
+    protected void store(IniHandler formatter, Section section, String option)
     {
         store(formatter, section.getComment(option));
         int n = section.length(option);
