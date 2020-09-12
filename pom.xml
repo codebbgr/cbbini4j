@@ -15,7 +15,7 @@
         <java.version>14</java.version>
         <!--plugins versions !-->
         <maven-compiler-plugin>3.8.1</maven-compiler-plugin>
-        <versions.maven.plugin>2.7</versions.maven.plugin> <!-- plugin for checking dependecies -plugins updates !-->
+        <versions.maven.plugin>2.8.1</versions.maven.plugin> <!-- plugin for checking dependecies -plugins updates !-->
         <maven-enforcer-plugin>3.0.0-M3</maven-enforcer-plugin> <!-- required to be able to check plugins updates !-->
         <maven-site-plugin>3.9.0</maven-site-plugin>
         <maven-project-info-reports-plugin>3.1.1</maven-project-info-reports-plugin>
