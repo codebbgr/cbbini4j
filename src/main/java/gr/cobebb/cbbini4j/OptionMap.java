@@ -3,60 +3,57 @@
  * codebb.gr
  */
 /**
- * Changelog
- * =========
- * 04/04/2020 (gmoralis) - Let OptionMap.as accept ClassLoader as the second argument (jetbrains patch)
- * 03/04/2020 (gmoralis) - Initial commit from ini4j project
+ * Changelog ========= 04/04/2020 (gmoralis) - Let OptionMap.as accept ClassLoader as the second
+ * argument (jetbrains patch) 03/04/2020 (gmoralis) - Initial commit from ini4j project
  */
 package gr.cobebb.cbbini4j;
 
-public interface OptionMap extends MultiMap<String, String>, CommentedMap<String, String>
-{
-    <T> T getAll(Object key, Class<T> clazz);
+public interface OptionMap extends MultiMap<String, String>, CommentedMap<String, String> {
+  <T> T getAll(Object key, Class<T> clazz);
 
-    void add(String key, Object value);
+  void add(String key, Object value);
 
-    void add(String key, Object value, int index);
+  void add(String key, Object value, int index);
 
-    <T> T as(Class<T> clazz);
-    
-    <T> T as(Class<T> clazz, ClassLoader classLoader);
+  <T> T as(Class<T> clazz);
 
-    <T> T as(Class<T> clazz, String keyPrefix);
+  <T> T as(Class<T> clazz, ClassLoader classLoader);
 
-    String fetch(Object key);
+  <T> T as(Class<T> clazz, String keyPrefix);
 
-    String fetch(Object key, String defaultValue);
+  String fetch(Object key);
 
-    String fetch(Object key, int index);
+  String fetch(Object key, String defaultValue);
 
-    <T> T fetch(Object key, Class<T> clazz);
+  String fetch(Object key, int index);
 
-    <T> T fetch(Object key, Class<T> clazz, T defaultValue);
+  <T> T fetch(Object key, Class<T> clazz);
 
-    <T> T fetch(Object key, int index, Class<T> clazz);
+  <T> T fetch(Object key, Class<T> clazz, T defaultValue);
 
-    <T> T fetchAll(Object key, Class<T> clazz);
+  <T> T fetch(Object key, int index, Class<T> clazz);
 
-    void from(Object bean);
+  <T> T fetchAll(Object key, Class<T> clazz);
 
-    void from(Object bean, String keyPrefix);
+  void from(Object bean);
 
-    String get(Object key, String defaultValue);
+  void from(Object bean, String keyPrefix);
 
-    <T> T get(Object key, Class<T> clazz);
+  String get(Object key, String defaultValue);
 
-    <T> T get(Object key, Class<T> clazz, T defaultValue);
+  <T> T get(Object key, Class<T> clazz);
 
-    <T> T get(Object key, int index, Class<T> clazz);
+  <T> T get(Object key, Class<T> clazz, T defaultValue);
 
-    String put(String key, Object value);
+  <T> T get(Object key, int index, Class<T> clazz);
 
-    String put(String key, Object value, int index);
+  String put(String key, Object value);
 
-    void putAll(String key, Object value);
+  String put(String key, Object value, int index);
 
-    void to(Object bean);
+  void putAll(String key, Object value);
 
-    void to(Object bean, String keyPrefix);
+  void to(Object bean);
+
+  void to(Object bean, String keyPrefix);
 }

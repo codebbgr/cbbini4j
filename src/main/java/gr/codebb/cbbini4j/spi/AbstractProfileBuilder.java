@@ -3,10 +3,8 @@
  * codebb.gr
  */
 /**
- * Changelog
- * =========
- * 04/04/2020 (gmoralis) - Change "AbstractProfileBuilder" members visibility correspondingly
- * 03/04/2020 (gmoralis) - Initial commit from ini4j project
+ * Changelog ========= 04/04/2020 (gmoralis) - Change "AbstractProfileBuilder" members visibility
+ * correspondingly 03/04/2020 (gmoralis) - Initial commit from ini4j project
  */
 package gr.codebb.cbbini4j.spi;
 
@@ -17,112 +15,112 @@ import gr.cobebb.cbbini4j.Profile;
 
 abstract class AbstractProfileBuilder implements IniHandler {
 
-    private Profile.Section _currentSection;
-    private boolean _header;
-    private String _lastComment;
+  private Profile.Section _currentSection;
+  private boolean _header;
+  private String _lastComment;
 
-    @Override
-    public void endIni() {
+  @Override
+  public void endIni() {
 
-        // comment only .ini files....
-        if ((_lastComment != null) && _header) {
-            setHeaderComment();
-        }
+    // comment only .ini files....
+    if ((_lastComment != null) && _header) {
+      setHeaderComment();
+    }
+  }
+
+  @Override
+  public void endSection() {
+    _currentSection = null;
+  }
+
+  @Override
+  public void handleComment(String comment) {
+    if ((_lastComment != null) && _header) {
+      _header = false;
+      setHeaderComment();
     }
 
-    @Override
-    public void endSection() {
-        _currentSection = null;
+    _lastComment = comment;
+  }
+
+  @Override
+  public void handleOption(String name, String value) {
+    _header = false;
+    if (getConfig().isMultiOption()) {
+      _currentSection.add(name, value);
+    } else {
+      _currentSection.put(name, value);
     }
 
-    @Override
-    public void handleComment(String comment) {
-        if ((_lastComment != null) && _header) {
-            _header = false;
-            setHeaderComment();
-        }
+    if (_lastComment != null) {
+      putComment(_currentSection, name);
+      _lastComment = null;
+    }
+  }
 
-        _lastComment = comment;
+  @Override
+  public void startIni() {
+    if (getConfig().isHeaderComment()) {
+      _header = true;
+    }
+  }
+
+  @Override
+  public void startSection(String sectionName) {
+    if (getConfig().isMultiSection()) {
+      _currentSection = getProfile().add(sectionName);
+    } else {
+      Ini.Section s = getProfile().get(sectionName);
+
+      _currentSection = (s == null) ? getProfile().add(sectionName) : s;
     }
 
-    @Override
-    public void handleOption(String name, String value) {
-        _header = false;
-        if (getConfig().isMultiOption()) {
-            _currentSection.add(name, value);
-        } else {
-            _currentSection.put(name, value);
-        }
+    if (_lastComment != null) {
+      if (_header) {
+        setHeaderComment();
+      } else {
+        putComment(getProfile(), sectionName);
+      }
 
-        if (_lastComment != null) {
-            putComment(_currentSection, name);
-            _lastComment = null;
-        }
+      _lastComment = null;
     }
 
-    @Override
-    public void startIni() {
-        if (getConfig().isHeaderComment()) {
-            _header = true;
-        }
+    _header = false;
+  }
+
+  protected abstract Config getConfig();
+
+  protected abstract Profile getProfile();
+
+  protected Profile.Section getCurrentSection() {
+    return _currentSection;
+  }
+
+  protected boolean isHeader() {
+    return _header;
+  }
+
+  protected void setHeader(boolean value) {
+    _header = value;
+  }
+
+  protected String getLastComment() {
+    return _lastComment;
+  }
+
+  protected void setLastComment(String value) {
+    _lastComment = value;
+  }
+
+  private void setHeaderComment() {
+    if (getConfig().isComment()) {
+      getProfile().setComment(_lastComment);
     }
+  }
 
-    @Override
-    public void startSection(String sectionName) {
-        if (getConfig().isMultiSection()) {
-            _currentSection = getProfile().add(sectionName);
-        } else {
-            Ini.Section s = getProfile().get(sectionName);
-
-            _currentSection = (s == null) ? getProfile().add(sectionName) : s;
-        }
-
-        if (_lastComment != null) {
-            if (_header) {
-                setHeaderComment();
-            } else {
-                putComment(getProfile(), sectionName);
-            }
-
-            _lastComment = null;
-        }
-
-        _header = false;
+  private void putComment(CommentedMap<String, ?> map, String key) {
+    if (getConfig().isComment()) {
+      map.putComment(key, _lastComment);
     }
-
-    protected abstract Config getConfig();
-
-    protected abstract Profile getProfile();
-
-    protected Profile.Section getCurrentSection() {
-        return _currentSection;
-    }
-
-    protected boolean isHeader() {
-        return _header;
-    }
-
-    protected void setHeader(boolean value) {
-        _header = value;
-    }
-
-    protected String getLastComment() {
-        return _lastComment;
-    }
-
-    protected void setLastComment(String value) {
-        _lastComment = value;
-    }
-
-    private void setHeaderComment() {
-        if (getConfig().isComment()) {
-            getProfile().setComment(_lastComment);
-        }
-    }
-
-    private void putComment(CommentedMap<String, ?> map, String key) {
-        if (getConfig().isComment()) {
-            map.putComment(key, _lastComment);
-        }
-    }
+  }
 }
